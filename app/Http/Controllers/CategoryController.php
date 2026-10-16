@@ -6,11 +6,19 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
         $categories = Category::latest()->get();
-
+        
+        $search = $request->query('q');
+        $categories = Category::query()
+            ->when($search, function ($query, $search){
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->orderBy('name')
+            ->paginate(5)
+            ->WithQueryString();
         return view('categories.index',
-        compact('categories'));
+        compact('categories', 'search'));
     }
 
     public function create(){
@@ -18,12 +26,16 @@ class CategoryController extends Controller
     }
 
     public function store(Request $request){
-    Category::create([
-        'name' => $request->name,
-        'description' => $request->description
+    $validated = $request->validate([
+        'name' => 'required|string|max:100',
+        'description' => 'nullable|string|max:500'
     ]);
 
-    return redirect()->route('categories.index');
+    Category::create($validated);
+
+    return redirect()
+        ->route('categories.index')
+        ->with('success', 'Kategori berhasil disimpan');
         
 
     }
@@ -45,23 +57,30 @@ class CategoryController extends Controller
     }
 
     public function update(Request $request, string $category){
-        $item = Category::findorFail($category);
+        $category = Category::findorFail($category);
 
-        $item->update([
-            'name' => $request->name,
-            'description' => $request->description,
+        $validated = $request->validate([
+            'name' => 'required|string|max:100',
+            'description'=>'nullable|string|max:500'
         ]);
 
-        return redirect()->route('categories.index');
+        $category->update($validated);
+
+        return redirect()
+        ->route('categories.index')
+        ->with('success', 'Kategori berhasil diperbarui');
     }
 
     public function destroy(string $category){
 
-        $item = Category::findorFail($category);
-        $item->delete();
+        $category = Category::findorFail($category);
+        $category->delete();
 
-        return redirect()->route('categories.index');
+        return redirect()
+        ->route('categories.index')
+        ->with('success', 'Kategori berhasil dihapus');
     }
+
 }
 
 

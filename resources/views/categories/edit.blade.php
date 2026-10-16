@@ -10,13 +10,13 @@
         <div class="mb-3">
             <label for="" class="form-label">Nama Kategori</label>
             <input type="text" name="name"
-                    value="{{ $category->name }}"
+                    value="{{ old('name', $category->name) }}"
                     class="form-control" required>
         </div>
 
         <div class="mb-3">
             <label for="" class="form-label">Deskripsi</label>
-            <textarea name="description" class="form-control" id="">{{ $category->description }}</textarea>
+            <textarea name="description" class="form-control" id="">{{ old('description', $category->description) }}</textarea>
         </div>
         <button class="btn btn-primary">Update</button>
         <a href="{{ route('categories.index') }}" class="btn btn-secondary">Batal</a>
