@@ -34,7 +34,7 @@
     <tbody>
         @forelse($categories as $category)
         <tr>
-            <td>{{ $loop -> iteration }}</td>
+            <td>{{ $categories->firstItem() + $loop->index}}</td>
             <td>{{ $category -> name }}</td>
             <td>{{ $category -> description }}</td>
             <td>{{ $category -> created_at }}</td>
